@@ -1,0 +1,33 @@
+\chapter{Kết luận và bảng tra cứu}
+
+\section{Kết luận}
+
+Tài liệu đã trình bày một quy trình toàn diện ứng dụng đại số máy tính (\textit{Computer Algebra System} - CAS) thông qua thư viện SymPy để tự động hóa việc giải quyết bài toán tương giao đồ thị hàm số THPT. Các kết quả then chốt đạt được bao gồm:
+\begin{itemize}
+    \item \textbf{Độ chính xác giải tích:} Khắc phục hoàn toàn sai số làm tròn của tính toán số học, bảo toàn nghiệm dạng căn thức và phân số chuẩn xác.
+    \item \textbf{Biện luận tham số chặt chẽ:} Hiện thực hóa phương pháp cô lập tham số thông qua việc kết hợp đạo hàm \texttt{sp.diff} và trích xuất nghiệm bội lẻ bằng \texttt{sp.roots}, loại trừ triệt để các điểm uốn có đạo hàm bằng 0.
+    \item \textbf{Tích hợp trực quan hóa:} Đồng bộ dữ liệu giải tích sang thư viện Matplotlib, cho phép tự động gắn nhãn giao điểm và kiểm chứng hình học một cách trực quan.
+\end{itemize}
+
+\section{Bảng tra cứu nhanh lệnh SymPy}
+
+Bảng \ref{tab:cheatsheet} tóm tắt các câu lệnh cốt lõi được sử dụng xuyên suốt trong tài liệu phục vụ khảo sát và giải bài toán tương giao:
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|l|p{5.2cm}|p{6.3cm}|}
+\hline
+\textbf{Lệnh SymPy} & \textbf{Ý nghĩa trong bài toán tương giao} & \textbf{Ví dụ cú pháp} \\ \hline
+\texttt{sp.symbols} & Khai báo biến và tham số trên tập số thực & \texttt{x, m = sp.symbols('x m', real=True)} \\ \hline
+\texttt{sp.Eq} & Thiết lập phương trình $f(x) = g(x)$ & \texttt{eq = sp.Eq(x**3 - 3*x, m)} \\ \hline
+\texttt{sp.diff} & Lấy đạo hàm tìm điểm tới hạn của hàm số & \texttt{f\_prime = sp.diff(f, x)} \\ \hline
+\texttt{sp.roots} & Trích xuất nghiệm và bậc bội để lọc cực trị & \texttt{r\_dict = sp.roots(f\_prime, x)} \\ \hline
+\texttt{sp.solve} & Giải nghiệm hoành độ giao điểm chính xác & \texttt{roots = sp.solve(eq, x)} \\ \hline
+\texttt{sp.denom} & Lấy mẫu số để tìm điều kiện gián đoạn & \texttt{sp.solve(sp.denom(y), x)} \\ \hline
+\texttt{expr.subs} & Thay giá trị biến/tham số, tính tung độ giao điểm & \texttt{y0 = g.subs(x, x0)} \\ \hline
+\end{tabular}
+\caption{Bảng tra cứu các lệnh SymPy cốt lõi.}
+\label{tab:cheatsheet}
+\end{table}

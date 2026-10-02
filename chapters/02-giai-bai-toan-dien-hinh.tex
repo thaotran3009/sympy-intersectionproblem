@@ -1,0 +1,129 @@
+\chapter{Giải quyết bài toán tương giao bằng SymPy}
+
+Trong chương này, chúng ta áp dụng các công cụ tính toán ký hiệu của SymPy để giải quyết hai dạng toán tương giao then chốt trong chương trình THPT: bài toán xác định tọa độ giao điểm cụ thể và bài toán biện luận số nghiệm theo tham số $m$. Việc kết hợp giữa tư duy toán học giải tích và các lệnh xử lý đại số tự động giúp quá trình tìm nghiệm diễn ra chính xác, nhanh chóng và giữ nguyên được giá trị nghiệm chuẩn xác dưới dạng căn thức hoặc phân số.
+
+\section{Bài toán 1: Xác định tọa độ giao điểm không chứa tham số}
+
+\subsection{Tương giao giữa đường thẳng và đồ thị hàm bậc ba}
+
+\textbf{Bài toán:} Tìm tọa độ giao điểm của đồ thị hàm bậc ba $(C): y = x^3 - 3x^2 + 2$ và đường thẳng $d: y = x - 1$.
+
+\noindent\textbf{Ý tưởng:} Đưa bài toán hình học về bài toán đại số bằng cách cho hai vế phải bằng nhau, giải phương trình bậc ba tìm các giá trị hoành độ rồi thế ngược lại vào phương trình đường thẳng để lấy tung độ.
+
+\noindent\textbf{Mô tả thuật toán:}
+\begin{enumerate}
+    \item Khai báo biến ký hiệu thực $x$ bằng \texttt{sp.symbols}.
+    \item Tạo phương trình hoành độ bằng \texttt{sp.Eq(f, g)}.
+    \item Tìm danh sách hoành độ giao điểm bằng \texttt{sp.solve}.
+    \item Dùng \texttt{.subs} để tính tọa độ $(x_i, y_i)$ tương ứng.
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption={Xác định giao điểm hàm bậc ba và đường thẳng}]
+import sympy as sp
+
+# Khai bao bien ky hieu
+x = sp.symbols('x', real=True)
+
+f = x**3 - 3*x**2 + 2
+g = x - 1
+
+# 1. Thiet lap va giai phuong trinh hoanh do giao diem
+eq = sp.Eq(f, g)
+roots_x = sp.solve(eq, x)
+
+# 2. Tinh toa do day du (x, y)
+points = [(xi, g.subs(x, xi)) for xi in roots_x]
+print("Toa do giao diem:", points)
+# Ket qua: [(-1, -2), (1, 0), (3, 2)]
+\end{lstlisting}
+
+\subsection{Tương giao giữa đường thẳng và đồ thị phân thức}
+
+\textbf{Bài toán:} Tìm tọa độ giao điểm của đồ thị $(H): y = \dfrac{2x + 1}{x - 1}$ và đường thẳng $d: y = x + 1$.
+
+\noindent\textbf{Ý tưởng:} Bản chất vẫn là giải phương trình hoành độ, nhưng vì hàm phân thức có mẫu số nên phải tìm điều kiện xác định trước để loại bỏ các nghiệm ngoại lai làm mẫu triệt tiêu.
+
+\noindent\textbf{Mô tả thuật toán:}
+\begin{enumerate}
+    \item Dùng \texttt{sp.denom} để lấy mẫu số và giải tìm điểm làm gián đoạn hàm số.
+    \item Giải phương trình hoành độ giao điểm bằng \texttt{sp.solve}.
+    \item Lọc bỏ các nghiệm trùng với điểm gián đoạn đã tìm được.
+    \item Tính tung độ cho các nghiệm hợp lệ bằng \texttt{.subs}.
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption={Tương giao hàm phân thức và loại nghiệm gián đoạn}]
+import sympy as sp
+
+# Khai bao bien ky hieu
+x = sp.symbols('x', real=True)
+
+y_frac = (2*x + 1) / (x - 1)
+y_line = x + 1
+
+# 1. Lay tap diem khien mau so triet tieu
+discontinuity = sp.solve(sp.Eq(sp.denom(y_frac), 0), x)
+
+# 2. Giai phuong trinh hoanh do
+raw_roots = sp.solve(sp.Eq(y_frac, y_line), x)
+
+# 3. Loc bo nghiem ngoai lai va tinh toa do
+valid_roots = [xi for xi in raw_roots if xi not in discontinuity]
+points = [(xi, y_line.subs(x, xi)) for xi in valid_roots]
+print("Toa do giao diem hop le:", points)
+# Ket qua: [(1 - sqrt(3), 2 - sqrt(3)), (1 + sqrt(3), 2 + sqrt(3))]
+\end{lstlisting}
+
+\section{Bài toán 2: Biện luận theo tham số $m$ số giao điểm của đồ thị với trục hoành $Ox$}
+
+\textbf{Bài toán:} Cho đồ thị hàm số $(C_m): y = x^3 - 3x^2 - m$. Biện luận theo tham số $m$ số giao điểm của đồ thị $(C_m)$ với trục hoành $Ox$.
+
+\noindent\textbf{Ý tưởng:} Cô lập tham số để đưa về sự tương giao giữa đồ thị hàm số cố định $y = \varphi(x)$ và đường thẳng nằm ngang $y = m$; số giao điểm tương ứng với từng khoảng của $m$ được xác định dựa trên vị trí tương đối của đường thẳng so với các giá trị cực trị thực sự (chỉ xét các điểm làm đạo hàm đổi dấu).
+
+\noindent\textbf{Mô tả thuật toán:}
+\begin{enumerate}
+    \item Khai báo biến $x$ và tham số $m$ bằng \texttt{sp.symbols}.
+    \item Lấy đạo hàm $\varphi'(x)$ bằng \texttt{sp.diff}.
+    \item Dùng \texttt{sp.roots} để trích xuất từ điển các nghiệm cùng bậc bội tương ứng.
+    \item Lọc các nghiệm có số bội lẻ để thu được các điểm cực trị thực sự (loại trừ nghiệm bội chẵn).
+    \item Tính giá trị cực đại ($y_{\text{cđ}}$) và cực tiểu ($y_{\text{ct}}$) bằng \texttt{.subs}, sau đó đưa ra kết luận biện luận theo $m$.
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption={Biện luận số giao điểm có kiểm tra số bội của nghiệm đạo hàm}]
+import sympy as sp
+
+# Khai bao bien va tham so ky hieu
+x, m = sp.symbols('x m', real=True)
+
+phi = x**3 - 3*x**2
+
+# 1. Tinh dao ham
+phi_prime = sp.diff(phi, x)
+
+# 2. Trich xuat tap nghiem va so boi (multiplicity)
+roots_dict = sp.roots(phi_prime, x)
+
+# 3. Loc cac diem cuc tri thuc su (nghiem boi le)
+crit_pts = [pt for pt, mult in roots_dict.items() 
+if mult % 2 != 0]
+
+# 4. Bien luan theo so luong cuc tri hop le
+if len(crit_pts) < 2:
+    print("Ham so don dieu tren R. Do thi luon cat Ox 
+    tai dung 1 diem voi moi m.")
+else:
+    y_vals = [phi.subs(x, pt) for pt in crit_pts]
+    y_cd = max(y_vals)
+    y_ct = min(y_vals)
+
+    print(f"Cuc dai: {y_cd}, cuc tieu: {y_ct}")
+    print(f"- 1 giao diem khi: m < {y_ct} hoac m > {y_cd}")
+    print(f"- 2 giao diem khi: m = {y_ct} hoac m = {y_cd}")
+    print(f"- 3 giao diem phan biet khi: {y_ct} < m < {y_cd}")
+\end{lstlisting}
+
+Kết quả phân tích giải tích từ mã nguồn cho thấy:
+\begin{itemize}
+    \item Với $m < -4$ hoặc $m > 0$: Phương trình có đúng một nghiệm thực, đồ thị $(C_m)$ cắt $Ox$ tại 1 điểm duy nhất.
+    \item Với $m = -4$ hoặc $m = 0$: Phương trình có một nghiệm đơn và một nghiệm kép, đồ thị $(C_m)$ có 2 điểm chung với $Ox$ (có tiếp xúc).
+    \item Với $-4 < m < 0$: Phương trình có 3 nghiệm thực phân biệt, đồ thị $(C_m)$ cắt $Ox$ tại 3 điểm phân biệt.
+\end{itemize}

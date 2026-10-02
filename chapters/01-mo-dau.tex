@@ -1,0 +1,117 @@
+\chapter{Một số lệnh thường dùng trong SymPy và Cơ sở lí thuyết toán học}
+
+Bài toán tương giao giữa hai đồ thị hàm số là một trong những nội dung cốt lõi của chương trình Giải tích lớp 12. Về mặt hình học, việc xác định số giao điểm và tọa độ giao điểm tương đương với việc giải phương trình hoành độ giao điểm $f(x) = g(x)$. Trong khi các công cụ tính toán số học thông thường chỉ trả về nghiệm xấp xỉ dạng thập phân, thư viện \textbf{SymPy} của Python cung cấp khả năng tính toán đại số ký hiệu (\textit{Computer Algebra System}), cho phép tìm nghiệm chính xác dưới dạng phân số, căn thức và hỗ trợ biện luận tham số $m$ một cách tường minh.
+
+\section{Thiết lập môi Trường thực hành trực tuyến toán học}
+
+Toàn bộ mã nguồn trong tài liệu được thực thi trực tiếp trên hệ thống JupyterLab web:
+\begin{itemize}
+    \item \textbf{Địa chỉ truy cập:} \url{https://py.truyenthong.edu.vn/lab/index.html}
+    \item \textbf{Quy trình làm việc:}
+    \begin{enumerate}
+        \item Mở trình duyệt, chọn \textbf{File $\rightarrow$ New $\rightarrow$ Notebook}.
+        \item Tổ chức lưu trữ mã nguồn trong thư mục làm việc cá nhân.
+        \item \textbf{Lưu ý:} Máy chủ có thể đặt lại phiên làm việc sau một khoảng thời gian không hoạt động. Cần chủ động tải file \texttt{.ipynb} về máy tính cá nhân sau mỗi buổi thực hành (\textbf{Nhấn chuột phải vào tên file $\rightarrow$ Download}).
+    \end{enumerate}
+\end{itemize}
+
+\section{Các lệnh Sympy hay dùng trong tài liệu}
+
+Tài liệu tập trung vào 6 nhóm lệnh cốt lõi phục vụ xuyên suốt quá trình xử lý bài toán tương giao:
+
+\begin{enumerate}
+    \item \textbf{Lệnh \texttt{sp.symbols}:}
+    \begin{itemize}
+        \item \textit{Mục đích:} Khai báo các ký hiệu toán học (biến số, tham số) trong tập số thực.
+        \item \textit{Cú pháp:} \texttt{var1, var2 = sp.symbols('ten\_1 ten\_2', real=True)}
+        \item \textit{Ví dụ:} \texttt{x, m = sp.symbols('x m', real=True)}
+    \end{itemize}
+
+    \item \textbf{Lệnh \texttt{sp.Eq}:}
+    \begin{itemize}
+        \item \textit{Mục đích:} Thiết lập đối tượng phương trình toán học $f(x) = g(x)$.
+        \item \textit{Cú pháp:} \texttt{eq = sp.Eq(ve\_trai, ve\_phai)}
+        \item \textit{Ví dụ:} \texttt{eq = sp.Eq(x**3 - 3*x, m)}
+    \end{itemize}
+
+    \item \textbf{Lệnh \texttt{sp.diff}:}
+    \begin{itemize}
+        \item \textit{Mục đích:} Tính đạo hàm để khảo sát tính đơn điệu và tìm điểm tới hạn khi cô lập tham số.
+        \item \textit{Cú pháp:} \texttt{f\_prime = sp.diff(bieu\_thuc, bien\_lay\_dao\_ham)}
+        \item \textit{Ví dụ:} \texttt{f\_prime = sp.diff(x**3 - 3*x, x)} $\rightarrow$ trả về \texttt{3*x**2 - 3}.
+    \end{itemize}
+
+    \item \textbf{Lệnh \texttt{sp.roots}:}
+    \begin{itemize}
+        \item \textit{Mục đích:} Tìm nghiệm chính xác của đa thức kèm số bội (\textit{multiplicity}) để lọc nghiệm bội lẻ (điểm cực trị thực sự) và loại nghiệm bội chẵn.
+        \item \textit{Cú pháp:} \texttt{r\_dict = sp.roots(da\_thuc, bien)}
+        \item \textit{Ví dụ:} \texttt{sp.roots(3*x**2 - 3, x)} $\rightarrow$ trả về \texttt{\{-1: 1, 1: 1\}}.
+    \end{itemize}
+
+    \item \textbf{Lệnh \texttt{sp.solve}:}
+    \begin{itemize}
+        \item \textit{Mục đích:} Giải phương trình tìm tập nghiệm chính xác (dạng căn thức, phân số).
+        \item \textit{Cú pháp:} \texttt{sp.solve(phuong\_trinh, an\_so)}
+        \item \textit{Ví dụ:} \texttt{sp.solve(sp.Eq(x**2 - 2, 0), x)} $\rightarrow$ trả về \texttt{[-sqrt(2), sqrt(2)]}.
+    \end{itemize}
+
+    \item \textbf{Lệnh \texttt{expr.subs}:}
+    \begin{itemize}
+        \item \textit{Mục đích:} Thế giá trị cụ thể của tham số hoặc biến số vào biểu thức hoặc phương trình.
+        \item \textit{Cú pháp:} \texttt{bieu\_thuc.subs(bien, gia\_tri)} hoặc truyền danh sách \texttt{bieu\_thuc.subs([(b1, g1), (b2, g2)])}
+        \item \textit{Ví dụ:} \texttt{(x**3 - 3*x).subs(x, 1)} $\rightarrow$ trả về \texttt{-2}.
+    \end{itemize}
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption={Ví dụ tích hợp 6 lệnh cốt lõi cho bài toán tương giao}]
+import sympy as sp
+
+# 1. symbols: Khai bao bien va tham so
+x, m = sp.symbols('x m', real=True)
+
+# 2. Eq: Thiet lap phuong trinh hoanh do giao diem x^3 - 3x = m
+f = x**3 - 3*x
+eq = sp.Eq(f, m)
+
+# 3. diff: Dao ham tim bieu thuc f'(x)
+f_prime = sp.diff(f, x)
+print("f'(x) =", f_prime)  # 3*x**2 - 3
+
+# 4. roots: Tim nghiem kem so boi de loc cuc tri(boi le)
+roots_dict = sp.roots(f_prime, x)
+print("Tap nghiem va so boi cua f'(x):", roots_dict)  
+# {-1: 1, 1: 1}
+crit_pts = [pt for pt, mult in roots_dict.items() 
+if mult % 2 != 0]
+
+# 5. expr.subs: Tinh gia tri cuc tri
+y_cd = f.subs(x, -1)  # 2
+y_ct = f.subs(x, 1)   # -2
+print(f"Cuc dai: {y_cd}, cuc tieu: {y_ct}")
+
+# The tham so m = 0 vao phuong trinh bang phuong thuc .subs()
+eq_m0 = eq.subs(m, 0)
+
+# 6. solve: Giai phuong trinh tim hoanh do giao diem khi m = 0
+nghiem = sp.solve(eq_m0, x)
+print("Giao diem khi m = 0:", nghiem)  # [-sqrt(3), 0, sqrt(3)]
+\end{lstlisting}
+
+\section{Cơ sở lí thuyết toán học}
+
+\begin{enumerate}
+    \item \textbf{Phương trình hoành độ giao điểm:} 
+    Tọa độ giao điểm của hai đồ thị $(C_1): y = f(x)$ và $(C_2): y = g(x)$ là nghiệm của hệ:
+    \begin{equation}
+        \begin{cases} y = f(x) \\ y = g(x) \end{cases} \implies f(x) - g(x) = 0.
+    \end{equation}
+    Số nghiệm thực phân biệt của phương trình bằng số giao điểm của hai đồ thị. Mỗi hoành độ giao điểm $x_0$ hợp lệ cho tung độ tương ứng $y_0 = f(x_0) = g(x_0)$.
+    
+    \item \textbf{Nguyên lí cô lập tham số và tính chất đổi dấu của đạo hàm:} 
+    Khi phương trình hoành độ giao điểm đưa được về dạng $m = \varphi(x)$, số nghiệm tương đương với số giao điểm giữa đồ thị $y = \varphi(x)$ và đường thẳng nằm ngang $y = m$. 
+    \begin{itemize}
+        \item Một điểm tới hạn $x_0$ của phương trình $\varphi'(x) = 0$ chỉ tạo thành điểm cực trị khi $\varphi'(x)$ đổi dấu qua $x_0$, tức $x_0$ phải là nghiệm bội lẻ.
+        \item Nếu $\varphi'(x) = 0$ có nghiệm bội chẵn, đạo hàm không đổi dấu, điểm đó là điểm uốn có tiếp tuyến nằm ngang chứ không phải cực trị.
+    \end{itemize}
+\end{enumerate}
+Trong chương tiếp theo, ta sẽ vận dụng kiến thức ở chương này để giải quyết các bài toán cụ thể.
